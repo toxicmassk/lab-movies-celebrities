@@ -4,6 +4,7 @@ dotenv.config();
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
+const Celebrity = require("./models/celebrity");
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.get("/", (req, res, next) => {
 });
 
 app.get("/celebrities/create", (req, res, next) => {
-  res.render("celebrities/new-celebrity");
+  res.render("celebrities/new-celebrity"); // file path, no slas needed!
 });
 
 app.post("/celebrities/create", (req, res, next) => {
@@ -29,11 +30,19 @@ app.post("/celebrities/create", (req, res, next) => {
     catchPhrase: catchPhrase,
   })
     .then(() => {
-      res.redirect("celebrities");
+      res.redirect("/celebrities"); // URL slash needed!
     })
-    .catch((error) => {
-      next(error);
+    .catch(() => {
+      res.render("celebrities/new-celebrity");
     });
+});
+
+app.get("/celebrities", (req, res, next) => {
+  Celebrity.find({})
+    .then((celebrities) => {
+      res.render("celebrities/celebrities", { celebrities }); // filepath, object, no slash needed!
+    })
+    .catch((error) => next(error));
 });
 
 app.use((error, req, res, next) => {
