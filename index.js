@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");
 const Celebrity = require("./models/celebrity");
+const Movie = require("./models/movie");
 
 const app = express();
 
@@ -41,6 +42,32 @@ app.get("/celebrities", (req, res, next) => {
   Celebrity.find({})
     .then((celebrities) => {
       res.render("celebrities/celebrities", { celebrities }); // filepath, object, no slash needed!
+    })
+    .catch((error) => next(error));
+});
+
+app.get("/movies/create", (req, res, next) => {
+  res.render("movies/new-movie");
+});
+
+app.post("/movies/create", (req, res, next) => {
+  const { title, genre, plot, cast } = req.body;
+  Movie.create({
+    title: title,
+    genre: genre,
+    plot: plot,
+    cast: cast,
+  })
+    .then(() => {
+      res.redirect("/movies");
+    })
+    .catch((error) => next(error));
+});
+
+app.get("/movies", (req, res, next) => {
+  Movie.find({})
+    .then((movies) => {
+      res.render("movies/movies", { movies });
     })
     .catch((error) => next(error));
 });
